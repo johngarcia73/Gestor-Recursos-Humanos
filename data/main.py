@@ -50,8 +50,16 @@ def ejecutar_opcion_principal(opcion):
 
 def mostrar_empleados():
     print('--- Empleados disponibles ---')
-    for result in prolog.query("empleado(ID, Nombre)"):
-        print(f"ID: {result['ID']}, Nombre: {result['Nombre']}")
+    cargos = list(prolog.query("cargo(NombreCargo)"))
+    for cargo in cargos:
+        nombre_cargo = cargo['NombreCargo']
+        print(f"Cargo: {nombre_cargo}")
+        empleados = list(prolog.query(f"cargo_empleado(ID, '{nombre_cargo}'), empleado(ID, Nombre)"))
+        if empleados:
+            for empleado in empleados:
+                print(f"  ID: {empleado['ID']}, Nombre: {empleado['Nombre']}")
+        else:
+            print("  No hay empleados asignados a este cargo.")
     print('--- Fin de la lista de empleados ---')
 
 def mostrar_cargos():
@@ -112,8 +120,11 @@ def ejecutar_opcion_cargos(opcion):
     limpiar_pantalla()
     if opcion == '1':
         nombre_cargo = input('Ingrese el nombre del cargo: ')
+        limite_turnos = input('Ingrese límite de turnos a la semana: ')
         for result in prolog.query(f"agregar_cargo_por_nombre('{nombre_cargo}')"):
             print(result)
+        for result in prolog.query(f"agregar_limite_semanal('{nombre_cargo}', {limite_turnos})"):
+            print(result)  
     elif opcion == '2':
         mostrar_cargos()
         nombre_cargo = input('Ingrese el nombre del cargo: ')
@@ -195,6 +206,7 @@ def menu_turnos():
     print('6. Listar asignaciones de turnos para una fecha')
     print('7. Eliminar asignación de turno en una fecha')
     print('8. Eliminar todas las asignaciones de una fecha')
+    print('9. Modificar cooldown de un empleado')
     print('0. Volver al menú principal')
     opcion = input('Seleccione una opción: ')
     ejecutar_opcion_turnos(opcion)
@@ -245,6 +257,12 @@ def ejecutar_opcion_turnos(opcion):
         fecha = input('Ingrese la fecha (YYYY-MM-DD): ')
         for result in prolog.query(f"eliminar_todas_asignaciones_para_fecha('{fecha}')"):
             print(result)
+    elif opcion == '9':
+        mostrar_empleados()
+        nombre_empleado = input('Ingrese el nombre del empleado: ')
+        nueva_fecha_cooldown = input('Ingrese la nueva fecha de cooldown (YYYY-MM-DD): ')
+        for result in prolog.query(f"modificar_cooldown_de_empleado('{nombre_empleado}', '{nueva_fecha_cooldown}')"):
+            print(result)
     elif opcion == '0':
         menu_principal()
         return
@@ -275,8 +293,7 @@ def menu_puntuaciones():
     print('1. Incrementar puntuación de empleado')
     print('2. Consultar puntuación de empleado')
     print('3. Evaluar rendimiento de empleado')
-    print('4. Evaluar desempeño de empleado en el mes actual')
-    print('5. Generar ranking de mejores empleados')
+    print('4. Generar ranking de mejores empleados')
     print('0. Volver al menú principal')
     opcion = input('Seleccione una opción: ')
     ejecutar_opcion_puntuaciones(opcion)
@@ -295,23 +312,17 @@ def ejecutar_opcion_puntuaciones(opcion):
         empleado_query = list(prolog.query(f"empleado(ID, '{nombre_empleado}')"))
         if empleado_query:
             for result in prolog.query(f"consultar_puntuacion_de_empleado('{nombre_empleado}')"):
-                if result: 
-                    print(result, '\n')
+                print(result)
         else:
             print(f"Error: Empleado {nombre_empleado} no encontrado.")
     elif opcion == '3':
         mostrar_empleados()
         nombre_empleado = input('Ingrese el nombre del empleado: ')
         for result in prolog.query(f"evaluar_rendimiento_de_empleado('{nombre_empleado}')"):
-            if (result): print(result)
+            pass  # La consulta se ejecuta, pero no se espera un resultado específico
     elif opcion == '4':
-        mostrar_empleados()
-        nombre_empleado = input('Ingrese el nombre del empleado: ')
-        for result in prolog.query(f"evaluar_desempeno_de_empleado('{nombre_empleado}')"):
-            print(result)
-    elif opcion == '5':
         for result in prolog.query("generar_ranking_mejores_empleados"):
-            if (result): print(result)
+            pass  # La consulta se ejecuta, pero no se espera un resultado específico
     elif opcion == '0':
         menu_principal()
         return

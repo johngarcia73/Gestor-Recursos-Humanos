@@ -27,17 +27,21 @@ nuevo_id_turno(NuevoID) :-
 
 
 % Agregar turno
-agregar_turno(HoraInicio, HoraFin, Cargo, Cooldown) :- 
-    (cargo(Cargo) ->
-        (turno(_, HoraInicio, HoraFin, Cargo, Cooldown) ->
-            format('Error: El turno con HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w ya existe.~n', [HoraInicio, HoraFin, Cargo, Cooldown])
+agregar_turno(HoraInicio, HoraFin, Cargo, Cooldown) :-
+    (HoraInicio >= 0, HoraInicio =< 23, HoraFin >= 0, HoraFin =< 23 ->
+        (cargo(Cargo) ->
+            (turno(_, HoraInicio, HoraFin, Cargo, Cooldown) ->
+                format('Error: El turno con HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w ya existe.~n', [HoraInicio, HoraFin, Cargo, Cooldown])
+            ;
+                nuevo_id_turno(IDTurno),
+                assertz(turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown)),
+                format('Turno agregado: ID ~w, HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w~n', [IDTurno, HoraInicio, HoraFin, Cargo, Cooldown])
+            )
         ;
-            nuevo_id_turno(IDTurno), 
-            assertz(turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown)), 
-            format('Turno agregado: ID ~w, HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w~n', [IDTurno, HoraInicio, HoraFin, Cargo, Cooldown])
+            format('Error: El cargo ~w no existe.~n', [Cargo])
         )
     ;
-        format('Error: El cargo ~w no existe.~n', [Cargo])
+        format('Error: La hora de inicio y fin deben estar entre 0 y 23.~n')
     ).
 
 
@@ -50,6 +54,7 @@ agregar_turno_por_detalles(HoraInicio, HoraFin, Cargo, Cooldown) :-
 borrar_turno(IDTurno) :- 
     listar_todos_los_turnos,
     retractall(turno(IDTurno, _, _, _, _)), 
+    retractall(asignacion_turno(_, IDTurno, _)),
     format('Turno borrado: ID ~w~n', [IDTurno]).
 
 % Listar todos los turnos disponibles
@@ -197,6 +202,22 @@ eliminar_todas_asignaciones_para_fecha(Fecha) :-
            retract(asignacion_turno(IDEmpleado, IDTurno, Fecha))),
     format('Todas las asignaciones de turno eliminadas para la fecha ~w~n', [Fecha]),
     guardar_datos.
+
+% Modificar el cooldown de un empleado
+modificar_cooldown_empleado(IDEmpleado, NuevaFechaCooldown) :-
+    (cooldown_turno(IDEmpleado, _) ->
+        retractall(cooldown_turno(IDEmpleado, _)),
+        assertz(cooldown_turno(IDEmpleado, NuevaFechaCooldown)),
+        format('Cooldown modificado para el empleado con ID ~w. Nuevo cooldown hasta la fecha ~w.~n', [IDEmpleado, NuevaFechaCooldown]),
+        guardar_datos
+    ;
+        format('Error: No se encontró un cooldown existente para el empleado con ID ~w.~n', [IDEmpleado])
+    ).
+
+% Obtener la fecha actual en formato ISO 8601
+obtener_fecha_actual(FechaActual) :-
+    get_time(Timestamp),
+    format_time(atom(FechaActual), '%Y-%m-%d', Timestamp).
 
 % Guardar la base de datos en un archivo
 guardar_datos :- 

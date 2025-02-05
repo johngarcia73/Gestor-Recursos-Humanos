@@ -17,8 +17,7 @@ incrementar_puntuacion(ID, Reward) :-
 % Incrementar puntuacion por nombre de empleado
 incrementar_puntuacion_por_nombre(NombreEmpleado, Reward) :-
     empleado(ID, NombreEmpleado),
-    incrementar_puntuacion(ID, Reward),
-    write('Puntuación incrementada para '), write(NombreEmpleado), write(' con un valor de '), write(Reward), writeln(' puntos.').
+    incrementar_puntuacion(ID, Reward).
 
 % Consultar puntuacion
 consultar_puntuacion(ID) :-
@@ -113,7 +112,7 @@ ranking_mejores_empleados_por_cargo(Cargo) :-
             Empleados),
     keysort(Empleados, EmpleadosOrdenados),
     reverse(EmpleadosOrdenados, EmpleadosOrdenadosDesc),
-    format('Mejores empleados para el cargo ~w:~n', [Cargo]),
+    format('Mejores empleados para el cargo ~w:~n', [Cargo]), nl,
     findall(_, (nth1(Pos, EmpleadosOrdenadosDesc, PuntuacionTotal-IDEmpleado),
                Pos =< 3,
                empleado(IDEmpleado, Nombre),

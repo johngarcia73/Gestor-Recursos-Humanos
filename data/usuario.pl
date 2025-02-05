@@ -287,3 +287,12 @@ listar_todos_los_turnos :-
         format('No hay turnos disponibles.~n')
     ),
     writeln('--- Fin de la lista de turnos ---').
+
+% Modificar el cooldown de un empleado por nombre
+modificar_cooldown_de_empleado(NombreEmpleado, NuevaFechaCooldown) :-
+    (empleado(ID, NombreEmpleado) ->
+        modificar_cooldown_empleado(ID, NuevaFechaCooldown),
+        format('Cooldown de ~w modificado exitosamente.~n', [NombreEmpleado])
+    ;
+        format('Error: Empleado ~w no encontrado.~n', [NombreEmpleado])
+    ).

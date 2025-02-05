@@ -24,6 +24,15 @@ consultar_cargo(NombreCargo) :-
     write('Empleados con este cargo: '), writeln(Empleados),
     registrar_accion('Consultar', 'Cargo', NombreCargo).
 
+agregar_limite_semanal(NombreCargo, LimiteTurnos) :-
+    (cargo(NombreCargo) ->
+        assertz(limite_turnos(NombreCargo, LimiteTurnos)),
+        write('Límite de turnos semanal del cargo: '), write(LimiteTurnos), nl,
+        guardar_datos
+    ;
+        write('El cargo '), write(NombreCargo), write(' no existe.'), nl    
+    ).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Funciones CRUD para relacion cargo-empleado
