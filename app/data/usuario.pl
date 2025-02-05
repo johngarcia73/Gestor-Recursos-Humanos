@@ -24,7 +24,6 @@
 :- dynamic consultar_turno_por_id/1.
 :- dynamic planificar_turnos_para_fecha/1.
 :- dynamic listar_asignaciones_para_fecha/1.
-:- dynamic asignar_turno_a_empleado_por_nombre/3.
 
 % Agregar un nuevo empleado
 agregar_empleado_por_nombre(Nombre) :-
@@ -34,6 +33,24 @@ agregar_empleado_por_nombre(Nombre) :-
         agregar_empleado(Nombre),
         format('Empleado ~w agregado exitosamente.~n', [Nombre]),
         guardar_datos
+    ).
+
+% Borrar un empleado por nombre
+borrar_empleado_por_nombre(Nombre) :-
+    (empleado(ID, Nombre) ->
+        borrar_empleado(ID),
+        format('Empleado ~w borrado exitosamente.~n', [Nombre]),
+        guardar_datos
+    ;
+        format('Error: Empleado ~w no encontrado.~n', [Nombre])
+    ).
+
+% Consultar un empleado por nombre
+consultar_empleado_por_nombre(Nombre) :-
+    (empleado(ID, Nombre) ->
+        consultar_empleado(ID)
+    ;
+        format('Error: Empleado ~w no encontrado.~n', [Nombre])
     ).
 
 % Agregar un nuevo cargo
@@ -110,7 +127,7 @@ consultar_cargos_de_empleado(NombreEmpleado) :-
 
 % Agregar una tarea a un empleado por nombre
 agregar_tarea_a_empleado(NombreEmpleado, Tarea, Reward) :-
-    (empleado(ID, NombreEmpleado) ->
+    (empleado(_, NombreEmpleado) ->
         agregar_tarea_por_nombre(NombreEmpleado, Tarea, Reward),
         format('Tarea ~w agregada a ~w con un valor de ~w puntos exitosamente.~n', [Tarea, NombreEmpleado, Reward]),
         guardar_datos
@@ -120,7 +137,7 @@ agregar_tarea_a_empleado(NombreEmpleado, Tarea, Reward) :-
 
 % Borrar una tarea de un empleado por nombre
 borrar_tarea_de_empleado(NombreEmpleado, Tarea) :-
-    (empleado(ID, NombreEmpleado) ->
+    (empleado(_, NombreEmpleado) ->
         borrar_tarea_por_nombre(NombreEmpleado, Tarea),
         format('Tarea ~w borrada de ~w exitosamente.~n', [Tarea, NombreEmpleado]),
         guardar_datos
@@ -131,8 +148,12 @@ borrar_tarea_de_empleado(NombreEmpleado, Tarea) :-
 % Consultar una tarea de un empleado por nombre
 consultar_tarea_de_empleado(NombreEmpleado, Tarea) :-
     (empleado(ID, NombreEmpleado) ->
-        consultar_tarea_por_nombre(NombreEmpleado, Tarea),
-        format('Tarea ~w de ~w consultada exitosamente.~n', [Tarea, NombreEmpleado])
+        (tarea(Tarea, ID, _) ->
+            consultar_tarea_por_nombre(NombreEmpleado, Tarea),
+            format('Tarea ~w de ~w consultada exitosamente.~n', [Tarea, NombreEmpleado])
+        ;
+            format('Error: Tarea ~w no encontrada para el empleado ~w.~n', [Tarea, NombreEmpleado])
+        )
     ;
         format('Error: Empleado ~w no encontrado.~n', [NombreEmpleado])
     ).
@@ -154,15 +175,22 @@ completar_tarea_de_empleado(NombreEmpleado, Tarea) :-
 % Obtener todas las tareas de un empleado por nombre
 obtener_tareas_de_empleado(NombreEmpleado) :-
     (empleado(ID, NombreEmpleado) ->
-        obtener_tareas_empleado_por_nombre(NombreEmpleado),
-        format('Tareas de ~w obtenidas exitosamente.~n', [NombreEmpleado])
+        findall(Tarea, tarea(Tarea, ID, _), Tareas),
+        format('--- Tareas de ~w ---~n', [NombreEmpleado]),
+        (Tareas \= [] ->
+            forall(member(Tarea, Tareas), format('  - ~w~n', [Tarea]))
+        ;
+            format('No hay tareas asignadas.~n')
+        ),
+        format('--- Fin de las tareas ---~n'),
+        guardar_datos
     ;
         format('Error: Empleado ~w no encontrado.~n', [NombreEmpleado])
     ).
 
 % Recomendar tareas a un empleado por nombre
 recomendar_tareas_a_empleado(NombreEmpleado) :-
-    (empleado(ID, NombreEmpleado) ->
+    (empleado(_, NombreEmpleado) ->
         recomendar_tareas_por_nombre(NombreEmpleado),
         format('Tareas recomendadas a ~w exitosamente.~n', [NombreEmpleado])
     ;
@@ -171,7 +199,7 @@ recomendar_tareas_a_empleado(NombreEmpleado) :-
 
 % Incrementar la puntuación de un empleado por nombre
 incrementar_puntuacion_a_empleado(NombreEmpleado, Reward) :-
-    (empleado(ID, NombreEmpleado) ->
+    (empleado(_, NombreEmpleado) ->
         incrementar_puntuacion_por_nombre(NombreEmpleado, Reward),
         format('Puntuación de ~w incrementada en ~w puntos exitosamente.~n', [NombreEmpleado, Reward]),
         guardar_datos
@@ -182,7 +210,7 @@ incrementar_puntuacion_a_empleado(NombreEmpleado, Reward) :-
 % Consultar la puntuación de un empleado por nombre
 consultar_puntuacion_de_empleado(NombreEmpleado) :-
     (empleado(ID, NombreEmpleado) ->
-        consultar_puntuacion_por_nombre(NombreEmpleado),
+        consultar_puntuacion(ID),
         format('Puntuación de ~w consultada exitosamente.~n', [NombreEmpleado])
     ;
         format('Error: Empleado ~w no encontrado.~n', [NombreEmpleado])
@@ -190,7 +218,7 @@ consultar_puntuacion_de_empleado(NombreEmpleado) :-
 
 % Evaluar el rendimiento de un empleado por nombre
 evaluar_rendimiento_de_empleado(NombreEmpleado) :-
-    (empleado(ID, NombreEmpleado) ->
+    (empleado(_, NombreEmpleado) ->
         evaluar_rendimiento_por_nombre(NombreEmpleado),
         format('Rendimiento de ~w evaluado exitosamente.~n', [NombreEmpleado])
     ;
@@ -199,7 +227,7 @@ evaluar_rendimiento_de_empleado(NombreEmpleado) :-
 
 % Evaluar el desempeño de un empleado en el mes actual por nombre
 evaluar_desempeno_de_empleado(NombreEmpleado) :-
-    (empleado(ID, NombreEmpleado) ->
+    (empleado(_, NombreEmpleado) ->
         evaluar_desempeno_por_nombre(NombreEmpleado),
         format('Desempeño de ~w en el mes actual evaluado exitosamente.~n', [NombreEmpleado])
     ;
@@ -248,14 +276,14 @@ listar_asignaciones_para_fecha(Fecha) :-
     listar_asignaciones(Fecha),
     format('Asignaciones de turnos para la fecha ~w listadas exitosamente.~n', [Fecha]).
 
-% Asignar turno a un empleado por nombre
-asignar_turno_a_empleado_por_nombre(NombreEmpleado, Fecha, IDTurno) :-
-    (empleado(IDEmpleado, NombreEmpleado), cargo_empleado(IDEmpleado, Cargo) ->
-        (turno(IDTurno, _, _, Cargo, _) ->
-            asignar_turno(IDEmpleado, IDTurno, Fecha)
-        ;
-            format('Error: Turno con ID ~w no encontrado para el cargo ~w.~n', [IDTurno, Cargo])
-        )
+% Listar todos los turnos disponibles
+listar_todos_los_turnos :- 
+    findall((IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), Turnos),
+    writeln('--- Turnos disponibles ---'),
+    (Turnos \= [] ->
+        forall(member((IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), Turnos),
+               format('ID: ~w, HoraInicio: ~w:00, HoraFin: ~w:00, Cargo: ~w, Cooldown: ~w días~n', [IDTurno, HoraInicio, HoraFin, Cargo, Cooldown]))
     ;
-        format('Error: Empleado ~w no encontrado o no tiene un cargo asignado.~n', [NombreEmpleado])
-    ).
+        format('No hay turnos disponibles.~n')
+    ),
+    writeln('--- Fin de la lista de turnos ---').

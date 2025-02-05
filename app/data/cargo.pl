@@ -31,7 +31,7 @@ agregar_cargo_empleado(ID, NombreCargo) :-
     empleado(ID, Nombre),
     cargo(NombreCargo),
     (cargo_empleado(ID, NombreCargo) ->
-        write('El empleado '), write(Nombre), write(' ya tiene asignado el cargo '), writeln(NombreCargo)
+        write('Error: El empleado '), write(Nombre), write(' ya tiene asignado el cargo '), writeln(NombreCargo)
     ;
         assertz(cargo_empleado(ID, NombreCargo)),
         write('Cargo '), write(NombreCargo), write(' asignado a '), write(Nombre), nl,

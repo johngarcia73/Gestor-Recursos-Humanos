@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/app/components/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/components/ui/card"
 import Empleados from "./components/Empleados"
 import Cargos from "./components/Cargos"
 import Tareas from "./components/Tareas"

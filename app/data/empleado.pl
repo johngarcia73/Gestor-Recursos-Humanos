@@ -33,22 +33,33 @@ borrar_empleado(ID) :-
     registrar_accion('Borrar', 'Empleado', Nombre),
     guardar_datos.
 
-% Borrar empleado por nombre
-borrar_empleado_por_nombre(Nombre) :-
-    empleado(ID, Nombre),
-    borrar_empleado(ID),
-    write('Empleado borrado: '), write(Nombre), nl.
+% % Borrar empleado por nombre
+% borrar_empleado_por_nombre(Nombre) :-
+%     empleado(ID, Nombre),
+%     borrar_empleado(ID),
+%     write('Empleado borrado: '), write(Nombre), nl.
 
 consultar_empleado(ID) :-
     empleado(ID, Nombre),
-    write('ID: '), write(ID), nl,
-    write('Nombre: '), write(Nombre), nl,
+    format('--- Información del Empleado ---~n'),
+    format('ID: ~w~n', [ID]),
+    format('Nombre: ~w~n', [Nombre]),
     findall(Cargo, cargo_empleado(ID, Cargo), Cargos),
-    write('Cargos: '), writeln(Cargos),
+    format('Cargos: ~w~n', [Cargos]),
+    findall((Tarea, Reward), tarea(Tarea, ID, Reward), Tareas),
+    format('Tareas:~n'),
+    forall(member((Tarea, Reward), Tareas),
+           format('  - Tarea: ~w, Puntos: ~w~n', [Tarea, Reward])),
+    findall((IDTurno, Fecha), asignacion_turno(ID, IDTurno, Fecha), Turnos),
+    format('Turnos:~n'),
+    forall(member((IDTurno, Fecha), Turnos),
+           (turno(IDTurno, HoraInicio, HoraFin, Cargo, _),
+            format('  - Turno ID: ~w, Fecha: ~w, HoraInicio: ~w:00, HoraFin: ~w:00, Cargo: ~w~n', [IDTurno, Fecha, HoraInicio, HoraFin, Cargo]))),
+    format('--- Fin de la Información ---~n'),
     registrar_accion('Consultar', 'Empleado', Nombre).
 
-% Consultar empleado por nombre
-consultar_empleado_por_nombre(Nombre) :-
-    empleado(ID, Nombre),
-    consultar_empleado(ID),
-    write('Empleado consultado: '), write(Nombre), nl.
+% % Consultar empleado por nombre
+% consultar_empleado_por_nombre(Nombre) :-
+%     empleado(ID, Nombre),
+%     consultar_empleado(ID),
+%     write('Empleado consultado: '), write(Nombre), nl.

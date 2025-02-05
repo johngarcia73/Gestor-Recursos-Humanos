@@ -22,10 +22,18 @@ incrementar_puntuacion_por_nombre(NombreEmpleado, Reward) :-
 
 % Consultar puntuacion
 consultar_puntuacion(ID) :-
+    fecha_actual_separada(_, MesActual, AnioActual),
     empleado(ID, Nombre),
-    evaluacion(ID, Year, Month, Puntuacion),
-    write('El empleado '), write(Nombre), write(' tiene la puntuacion '), write(Puntuacion), 
-    write(' en el mes de '), write(Month), write(' del año '), write(Year), nl.
+    findall((Anio, Mes, Puntuacion), 
+            (evaluacion(ID, Anio, Mes, Puntuacion), 
+             Anio =:= AnioActual, 
+             Mes >= MesActual - 2, 
+             Mes =< MesActual), 
+            Puntuaciones),
+    format('--- Puntuaciones de los últimos 3 meses para ~w ---~n', [Nombre]),
+    forall(member((Anio, Mes, Puntuacion), Puntuaciones),
+           format('Mes: ~w, Año: ~w, Puntuación: ~w~n', [Mes, Anio, Puntuacion])),
+    nl.
 
 % Consultar puntuacion por nombre de empleado
 consultar_puntuacion_por_nombre(NombreEmpleado) :-
@@ -34,12 +42,28 @@ consultar_puntuacion_por_nombre(NombreEmpleado) :-
 
 % Evaluar el rendimiento de los empleados
 evaluar_rendimiento(ID) :-
-    findall(Puntuacion, evaluacion(ID, _, _, Puntuacion), Puntuaciones),
-    sum_list(Puntuaciones, TotalPuntuacion),
-    length(Puntuaciones, NumEvaluaciones),
-    (NumEvaluaciones > 0 -> Promedio is TotalPuntuacion / NumEvaluaciones ; Promedio is 0),
+    fecha_actual_separada(_, MesActual, AnioActual),
+    findall((Anio, Mes, Puntuacion), 
+            (evaluacion(ID, Anio, Mes, Puntuacion), 
+             Anio =:= AnioActual, 
+             Mes >= max(1, MesActual - 2), 
+             Mes =< MesActual), 
+            Puntuaciones),
     empleado(ID, Nombre),
-    write('Rendimiento del empleado '), write(Nombre), write(': '), writeln(Promedio).
+    format('--- Rendimiento del empleado ~w ---~n', [Nombre]),
+    findall(PromedioMensual, 
+            (between(1, MesActual, Mes), 
+             Mes >= max(1, MesActual - 2),
+             findall(P, member((AnioActual, Mes, P), Puntuaciones), PuntuacionesMes),
+             sum_list(PuntuacionesMes, TotalMes),
+             length(PuntuacionesMes, NumEvaluacionesMes),
+             (NumEvaluacionesMes > 0 -> PromedioMensual is TotalMes / NumEvaluacionesMes ; PromedioMensual is 0),
+             format('Mes: ~w, Promedio Mensual: ~w~n', [Mes, PromedioMensual])
+            ), PromediosMensuales),
+    sum_list(PromediosMensuales, TotalPromedios),
+    length(PromediosMensuales, NumMeses),
+    (NumMeses > 0 -> PromedioAcumulado is TotalPromedios / NumMeses ; PromedioAcumulado is 0),
+    format('--- Promedio Acumulado de los últimos 3 meses: ~w ---~n', [PromedioAcumulado]).
 
 % Obtener la fecha actual separada en día, mes y año
 fecha_actual_separada(Dia, Mes, Anio) :-
@@ -50,8 +74,7 @@ fecha_actual_separada(Dia, Mes, Anio) :-
 % Evaluar rendimiento por nombre de empleado
 evaluar_rendimiento_por_nombre(NombreEmpleado) :-
     empleado(ID, NombreEmpleado),
-    evaluar_rendimiento(ID),
-    write('Rendimiento de '), write(NombreEmpleado), writeln(':').
+    evaluar_rendimiento(ID).
 
 % Sumar los elementos de una lista
 sum_list([], 0).

@@ -25,16 +25,39 @@ nuevo_id_turno(NuevoID) :-
     NuevoID is ActualID + 1, 
     assertz(id_contador_turno(NuevoID)).
 
+
 % Agregar turno
 agregar_turno(HoraInicio, HoraFin, Cargo, Cooldown) :- 
-    nuevo_id_turno(IDTurno), 
-    assertz(turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown)), 
-    format('Turno agregado: ID ~w, HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w~n', [IDTurno, HoraInicio, HoraFin, Cargo, Cooldown]).
+    (cargo(Cargo) ->
+        (turno(_, HoraInicio, HoraFin, Cargo, Cooldown) ->
+            format('Error: El turno con HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w ya existe.~n', [HoraInicio, HoraFin, Cargo, Cooldown])
+        ;
+            nuevo_id_turno(IDTurno), 
+            assertz(turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown)), 
+            format('Turno agregado: ID ~w, HoraInicio: ~w, HoraFin: ~w, Cargo: ~w, Cooldown: ~w~n', [IDTurno, HoraInicio, HoraFin, Cargo, Cooldown])
+        )
+    ;
+        format('Error: El cargo ~w no existe.~n', [Cargo])
+    ).
+
+
+% Agregar turno por detalles
+agregar_turno_por_detalles(HoraInicio, HoraFin, Cargo, Cooldown) :-
+    agregar_turno(HoraInicio, HoraFin, Cargo, Cooldown).
+
 
 % Borrar turno
 borrar_turno(IDTurno) :- 
+    listar_todos_los_turnos,
     retractall(turno(IDTurno, _, _, _, _)), 
     format('Turno borrado: ID ~w~n', [IDTurno]).
+
+% Listar todos los turnos disponibles
+listar_todos_los_turnos :- 
+    findall((IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), Turnos),
+    writeln('Turnos disponibles:'),
+    forall(member((IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), Turnos),
+           format('ID: ~w, HoraInicio: ~w:00, HoraFin: ~w:00, Cargo: ~w, Cooldown: ~w días~n', [IDTurno, HoraInicio, HoraFin, Cargo, Cooldown])).
 
 % Verificar diferencia de días entre dos fechas
 fecha_diferencia(Fecha1, Fecha2, Dias) :- 
@@ -78,14 +101,25 @@ asignar_turno(IDEmpleado, IDTurno, Fecha) :-
     turno(IDTurno, HoraInicio, HoraFin, Cargo, Cooldown), 
     empleado(IDEmpleado, Nombre), 
     cargo_empleado(IDEmpleado, Cargo), 
-    not(asignacion_turno(IDEmpleado, _, Fecha)), 
-    verificar_cooldown(IDEmpleado, Fecha), 
-    limite_semanal(IDEmpleado, Cargo, Fecha), % Verificar límite semanal
-    assertz(asignacion_turno(IDEmpleado, IDTurno, Fecha)), 
-    calcular_fecha_fin(Fecha, Cooldown, FechaFin), 
-    retractall(cooldown_turno(IDEmpleado, _)), 
-    assertz(cooldown_turno(IDEmpleado, FechaFin)), 
-    format('Empleado: ~w, Cargo: ~w, se le asigna el turno ~w:00-~w:00 en la fecha ~w~n', [Nombre, Cargo, HoraInicio, HoraFin, Fecha]).
+    (not(asignacion_turno(IDEmpleado, _, Fecha)) ->
+        (verificar_cooldown(IDEmpleado, Fecha) ->
+            (limite_semanal(IDEmpleado, Cargo, Fecha) ->
+                assertz(asignacion_turno(IDEmpleado, IDTurno, Fecha)), 
+                calcular_fecha_fin(Fecha, Cooldown, FechaFin), 
+                retractall(cooldown_turno(IDEmpleado, _)), 
+                assertz(cooldown_turno(IDEmpleado, FechaFin)), 
+                format('Empleado: ~w, Cargo: ~w, se le asigna el turno ~w:00-~w:00 en la fecha ~w~n', [Nombre, Cargo, HoraInicio, HoraFin, Fecha]),
+                guardar_datos
+            ;
+                format('Error: El empleado ~w ha alcanzado el límite semanal de turnos para el cargo ~w.~n', [Nombre, Cargo])
+            )
+        ;
+            cooldown_turno(IDEmpleado, FechaFin),
+            format('Error: El empleado ~w está en cooldown hasta la fecha ~w.~n', [Nombre, FechaFin])
+        )
+    ;
+        format('Error: El empleado ~w ya tiene un turno asignado en la fecha ~w.~n', [Nombre, Fecha])
+    ).
 
 % Planificar turnos recorriendo todos los cargos y asignando turnos a empleados disponibles
 planificar_turnos(Fecha) :- 
@@ -144,3 +178,39 @@ asignar_turno_a_empleado_por_nombre(NombreEmpleado, Fecha, IDTurno) :-
     ;
         format('Error: Empleado ~w no encontrado o no tiene un cargo asignado.~n', [NombreEmpleado])
     ).
+
+% Eliminar una asignación de turno en una fecha específica
+eliminar_asignacion_turno_por_fecha(NombreEmpleado, Fecha) :-
+    empleado(IDEmpleado, NombreEmpleado),
+    (asignacion_turno(IDEmpleado, IDTurno, Fecha) ->
+        retract(asignacion_turno(IDEmpleado, IDTurno, Fecha)),
+        format('Asignación de turno eliminada para el empleado ~w en la fecha ~w~n', [NombreEmpleado, Fecha]),
+        guardar_datos
+    ;
+        format('Error: No se encontró una asignación de turno para el empleado ~w en la fecha ~w~n', [NombreEmpleado, Fecha])
+    ).
+
+% Eliminar todas las asignaciones de turno en una fecha específica
+eliminar_todas_asignaciones_para_fecha(Fecha) :-
+    findall((IDEmpleado, IDTurno), asignacion_turno(IDEmpleado, IDTurno, Fecha), Asignaciones),
+    forall(member((IDEmpleado, IDTurno), Asignaciones),
+           retract(asignacion_turno(IDEmpleado, IDTurno, Fecha))),
+    format('Todas las asignaciones de turno eliminadas para la fecha ~w~n', [Fecha]),
+    guardar_datos.
+
+% Guardar la base de datos en un archivo
+guardar_datos :- 
+    tell('base_conocimientos.pl'),
+    listing(empleado),
+    listing(cargo),
+    listing(cargo_empleado),
+    listing(tarea),
+    listing(evaluacion),
+    listing(registro_accion),
+    listing(id_contador),
+    listing(id_contador_turno),
+    listing(turno),
+    listing(limite_turnos),
+    listing(asignacion_turno),
+    listing(cooldown_turno),
+    told.

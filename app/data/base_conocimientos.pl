@@ -2,8 +2,8 @@
 
 empleado(3, 'Pedro Lopez').
 empleado(4, 'Ana Martinez').
-empleado(5, 'Alicia Vazquez').
 empleado(6, 'Jose Agustin').
+empleado(8, 'Arnaldo Rodriguez').
 
 :- dynamic cargo/1.
 
@@ -11,24 +11,25 @@ cargo(ingeniero).
 cargo(disenador).
 cargo(programador).
 cargo(portero).
+cargo(gerente).
 
 :- dynamic cargo_empleado/2.
 
 cargo_empleado(3, programador).
 cargo_empleado(4, ingeniero).
-cargo_empleado(5, disenador).
-cargo_empleado(5, portero).
+cargo_empleado(6, gerente).
+cargo_empleado(6, portero).
 
 :- dynamic tarea/3.
 
-tarea(desarrollo, 3, 2).
-tarea(pruebas, 5, 3).
+tarea('reparar el baño', 4, 8).
+tarea(chambear, 3, 3).
 
 :- dynamic evaluacion/4.
 
 evaluacion(3, 2025, 1, 7).
 evaluacion(4, 2025, 1, 9).
-evaluacion(5, 2025, 1, 10).
+evaluacion(3, 2025, 2, 17).
 
 :- dynamic registro_accion/4.
 
@@ -51,9 +52,9 @@ registro_accion('Borrar', 'Cargo', portero, '2025-01-30 21:47:58').
 registro_accion('Agregar', 'Cargo', portero, '2025-01-30 21:48:11').
 registro_accion('Agregar', 'CargoEmpleado', portero, '2025-01-30 21:49:15').
 registro_accion('Consultar', 'CargoEmpleado', 'Alicia Vazquez', '2025-01-30 21:49:41').
-registro_accion('Agregar', 'Tarea', 'dise�ar_pagina_web', '2025-01-30 21:52:00').
-registro_accion('Consultar', 'Tarea', 'dise�ar_pagina_web', '2025-01-30 21:52:40').
-registro_accion('Borrar', 'Tarea', 'dise�ar_pagina_web', '2025-01-30 21:54:44').
+registro_accion('Agregar', 'Tarea', 'diseñar_pagina_web', '2025-01-30 21:52:00').
+registro_accion('Consultar', 'Tarea', 'diseñar_pagina_web', '2025-01-30 21:52:40').
+registro_accion('Borrar', 'Tarea', 'diseñar_pagina_web', '2025-01-30 21:54:44').
 registro_accion('Consultar', 'Tarea', diseno, '2025-01-30 21:55:46').
 registro_accion('Consultar', 'Empleado', 'Jose Agustin', '2025-01-31 00:27:51').
 registro_accion('Consultar', 'Empleado', 'Maria Gomez', '2025-01-31 00:28:36').
@@ -62,30 +63,57 @@ registro_accion('Consultar', 'Cargo', ingeniero, '2025-01-31 00:29:13').
 registro_accion('Agregar', 'Cargo', gerente, '2025-01-31 00:29:56').
 registro_accion('Consultar', 'Cargo', gerente, '2025-01-31 00:30:03').
 registro_accion('Borrar', 'Cargo', gerente, '2025-01-31 00:30:09').
+registro_accion('Agregar', 'Empleado', 7, '2025-02-02 15:33:41').
+registro_accion('Borrar', 'Empleado', 'Juan Marinello', '2025-02-02 15:34:04').
+registro_accion('Consultar', 'Empleado', 'Ana Martinez', '2025-02-02 15:56:41').
+registro_accion('Agregar', 'Empleado', 8, '2025-02-04 20:04:36').
+registro_accion('Borrar', 'Empleado', 'Alicia Vazquez', '2025-02-04 20:04:59').
+registro_accion('Consultar', 'Empleado', 'Ana Martinez', '2025-02-04 20:05:47').
+registro_accion('Agregar', 'Tarea', 'reparar el baño', '2025-02-04 20:06:45').
+registro_accion('Consultar', 'Tarea', 'reparar el baño', '2025-02-04 20:07:06').
+registro_accion('Agregar', 'Tarea', diseno, '2025-02-04 20:35:30').
+registro_accion('Borrar', 'Tarea', desarrollo, '2025-02-04 20:37:06').
+registro_accion('Borrar', 'Tarea', "desarrollo", '2025-02-04 20:57:43').
+registro_accion('Borrar', 'Tarea', "diseno", '2025-02-04 21:00:59').
+registro_accion('Borrar', 'Tarea', diseno, '2025-02-04 21:03:10').
+registro_accion('Agregar', 'Tarea', cocinar, '2025-02-04 21:03:45').
+registro_accion('Agregar', 'Tarea', caminar, '2025-02-04 21:08:33').
+registro_accion('Agregar', 'Tarea', chambear, '2025-02-04 21:13:04').
+registro_accion('Agregar', 'Tarea', comer, '2025-02-04 21:15:09').
+registro_accion('Agregar', 'Tarea', 'comer temprano', '2025-02-04 21:19:06').
+registro_accion('Agregar', 'Tarea', jugar, '2025-02-04 21:23:26').
+registro_accion('Borrar', 'Tarea', jugar, '2025-02-04 21:23:54').
+registro_accion('Completar', 'Tarea', 'comer temprano', '2025-02-04 21:24:34').
+registro_accion('Completar', 'Tarea', comer, '2025-02-04 21:31:41').
+registro_accion('Agregar', 'Cargo', gerente, '2025-02-04 21:56:20').
+registro_accion('Agregar', 'CargoEmpleado', portero, '2025-02-04 22:03:14').
+registro_accion('Consultar', 'Empleado', 'Jose Agustin', '2025-02-04 22:03:28').
+registro_accion('Agregar', 'CargoEmpleado', gerente, '2025-02-04 22:48:21').
+registro_accion('Agregar', 'CargoEmpleado', portero, '2025-02-04 22:54:50').
+registro_accion('Agregar', 'CargoEmpleado', portero, '2025-02-04 22:56:38').
 
 :- dynamic id_contador/1.
 
-id_contador(6).
+id_contador(8).
 
 :- dynamic id_contador_turno/1.
 
-id_contador_turno(6).
-id_contador_turno(6).
-id_contador_turno(7).
+id_contador_turno(10).
 
 :- dynamic turno/5.
 
 turno(6, 9, 17, programador, 3).
 turno(1, 9, 17, ingeniero, 2).
-turno(2, 17, 1, ingeniero, 2).
-turno(3, 9, 17, disenador, 1).
 turno(4, 17, 1, disenador, 1).
+turno(9, 3, 11, ingeniero, 1).
+turno(10, 8, 10, portero, 1).
 
 :- dynamic limite_turnos/2.
 
 limite_turnos(ingeniero, 5).
 limite_turnos(disenador, 5).
 limite_turnos(programador, 5).
+limite_turnos(portero, 5).
 
 :- dynamic asignacion_turno/3.
 
@@ -100,13 +128,17 @@ asignacion_turno(4, 1, '2025-02-02').
 asignacion_turno(5, 3, '2025-02-03').
 asignacion_turno(4, 1, '2025-08-03').
 asignacion_turno(5, 3, '2025-08-03').
-asignacion_turno(3, 6, '2025-08-03').
+asignacion_turno(6, 10, '2025-09-10').
+asignacion_turno(6, 10, '2025-09-11').
+asignacion_turno(6, 10, '2025-09-12').
+asignacion_turno(6, 10, '2025-09-13').
 
 :- dynamic cooldown_turno/2.
 
 cooldown_turno(1, '2025-01-18').
 cooldown_turno(2, '2025-01-18').
-cooldown_turno(4, '2025-08-05').
 cooldown_turno(5, '2025-08-04').
-cooldown_turno(3, '2025-08-06').
+cooldown_turno(6, '2025-09-18').
+cooldown_turno(4, '2025-09-19').
+cooldown_turno(3, '2025-09-20').
 
