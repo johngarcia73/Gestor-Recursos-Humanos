@@ -1,2 +1,0 @@
-npm install tailwindcss@latest tailwindcss-animate class-variance-authority clsx tailwind-merge lucide-react
-npx shadcn add button card input 
