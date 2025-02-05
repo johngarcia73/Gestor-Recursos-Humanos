@@ -287,7 +287,42 @@ def iniciar_aplicacion():
         tk.Button(contenedor_principal, text='Consultar', command=ejecutar_consultar).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver', command=menu_empleados).pack(pady=5)
 
-    
+    def asignar_cargo_empleado():
+        for widget in contenedor_principal.winfo_children():
+            widget.destroy()
+
+        tk.Label(contenedor_principal, text='Asignar cargo.', font=('Helvetica', 16)).pack(pady=20)
+        
+        tk.Label(contenedor_principal, text='Ingrese el nombre del cargo :').pack(pady=5)
+        entrada_nombre_cargo = tk.Entry(contenedor_principal)
+        entrada_nombre_cargo.pack(pady=5)
+        
+        tk.Label(contenedor_principal, text='Ingrese el nombre del empleado:').pack(pady=5)
+        entrada_nombre_empleado = tk.Entry(contenedor_principal)
+        entrada_nombre_empleado.pack(pady=5)
+        
+        def asignar():
+            cargo=entrada_nombre_cargo.get()
+            empleado=entrada_nombre_empleado.get()
+            if not cargo or not empleado:
+                messagebox.showwarning('Advertencia', 'Por favor, rellene todos los campos.')
+                return
+            empleado_query = list(prolog.query(f"empleado('{empleado}')"))
+            cargo_query=list(prolog.query(f"cargo('{cargo}')"))
+            if  not empleado_query or not cargo_query:
+                messagebox.showerror('Error', f"Cargo {cargo} o Empleado {empleado} no encontrado.")
+            else:    
+                try:
+                    for result in prolog.query(f"asignar_cargo_a_empleado('{empleado}', '{cargo}')"):
+                        print(result)
+                except Exception as e:
+                    messagebox.showerror('Error', f"Ocurrió un error: {e}")
+            
+            menu_cargos()
+            
+        tk.Button(contenedor_principal, text='Asignar', command=asignar).pack(pady=10)
+        tk.Button(contenedor_principal, text='Volver', command=menu_cargos).pack(pady=5)
+        
     # Inicializamos mostrando el menú principal
     menu_principal()
     ventana.mainloop()

@@ -2,15 +2,12 @@
 
 empleado(3, 'Pedro Lopez').
 empleado(4, 'Ana Martinez').
-empleado(6, 'Jose Agustin').
 empleado(8, 'Arnaldo Rodriguez').
-empleado(10, pepe).
 empleado(11, victorini).
 empleado(13, joridama).
 
 :- dynamic cargo/1.
 
-cargo(ingeniero).
 cargo(disenador).
 cargo(programador).
 cargo(portero).
@@ -20,9 +17,6 @@ cargo(profe).
 :- dynamic cargo_empleado/2.
 
 cargo_empleado(3, programador).
-cargo_empleado(4, ingeniero).
-cargo_empleado(6, portero).
-cargo_empleado(6, jardinero).
 cargo_empleado(8, portero).
 
 :- dynamic tarea/2.
@@ -38,7 +32,6 @@ tarea(chambear, 3, 3).
 evaluacion(3, 2025, 1, 7).
 evaluacion(4, 2025, 1, 9).
 evaluacion(3, 2025, 2, 17).
-evaluacion(6, 2025, 2, 7).
 evaluacion(4, 2025, 2, 1).
 
 :- dynamic registro_accion/4.
@@ -132,6 +125,9 @@ registro_accion('Borrar', 'Empleado', felipe, '2025-02-05 19:40:27').
 registro_accion('Borrar', 'Empleado', corin, '2025-02-05 19:40:51').
 registro_accion('Agregar', 'Cargo', chofer, '2025-02-05 19:41:58').
 registro_accion('Borrar', 'Cargo', chofer, '2025-02-05 19:42:11').
+registro_accion('Borrar', 'Cargo', ingeniero, '2025-02-05 20:00:41').
+registro_accion('Borrar', 'Empleado', pepe, '2025-02-05 20:02:32').
+registro_accion('Borrar', 'Empleado', 'Jose Agustin', '2025-02-05 20:02:43').
 
 :- dynamic id_contador/1.
 
