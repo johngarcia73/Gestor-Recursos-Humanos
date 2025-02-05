@@ -4,6 +4,9 @@ empleado(3, 'Pedro Lopez').
 empleado(4, 'Ana Martinez').
 empleado(6, 'Jose Agustin').
 empleado(8, 'Arnaldo Rodriguez').
+empleado(10, pepe).
+empleado(11, victorini).
+empleado(12, corin).
 
 :- dynamic cargo/1.
 
@@ -120,10 +123,13 @@ registro_accion('Agregar', 'Tarea', comer, '2025-02-05 06:05:15').
 registro_accion('Borrar', 'Tarea', comer, '2025-02-05 06:05:55').
 registro_accion('Agregar', 'Tarea', r, '2025-02-05 06:29:24').
 registro_accion('Borrar', 'Tarea', r, '2025-02-05 06:29:47').
+registro_accion('Agregar', 'Empleado', 10, '2025-02-05 17:41:26').
+registro_accion('Agregar', 'Empleado', 11, '2025-02-05 18:24:42').
+registro_accion('Agregar', 'Empleado', 12, '2025-02-05 18:41:02').
 
 :- dynamic id_contador/1.
 
-id_contador(9).
+id_contador(12).
 
 :- dynamic id_contador_turno/1.
 
