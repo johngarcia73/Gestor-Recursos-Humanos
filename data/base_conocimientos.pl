@@ -13,11 +13,13 @@ cargo(programador).
 cargo(portero).
 cargo(jardinero).
 cargo(profe).
+cargo(esclavo).
 
 :- dynamic cargo_empleado/2.
 
 cargo_empleado(3, programador).
 cargo_empleado(8, portero).
+cargo_empleado(15, esclavo).
 
 :- dynamic tarea/2.
 
@@ -26,6 +28,7 @@ cargo_empleado(8, portero).
 
 tarea('reparar el baño', 4, 8).
 tarea(chambear, 3, 3).
+tarea(relajarse, 11, 5).
 
 :- dynamic evaluacion/4.
 
@@ -132,6 +135,12 @@ registro_accion('Agregar', 'Empleado', 15, '2025-02-06 00:12:23').
 registro_accion('Borrar', 'Empleado', joridama, '2025-02-06 00:13:04').
 registro_accion('Agregar', 'Cargo', yutuber, '2025-02-06 00:13:46').
 registro_accion('Borrar', 'Cargo', yutuber, '2025-02-06 00:14:06').
+registro_accion('Agregar', 'Tarea', 'irse de vacaciones', '2025-02-06 01:00:12').
+registro_accion('Borrar', 'Tarea', 'irse de vacaciones', '2025-02-06 01:09:18').
+registro_accion('Consultar', 'Cargo', programador, '2025-02-06 01:10:13').
+registro_accion('Agregar', 'Cargo', esclavo, '2025-02-06 01:11:35').
+registro_accion('Agregar', 'CargoEmpleado', esclavo, '2025-02-06 01:18:44').
+registro_accion('Agregar', 'Tarea', relajarse, '2025-02-06 01:23:29').
 
 :- dynamic id_contador/1.
 
@@ -158,6 +167,7 @@ limite_turnos(profe, 4).
 limite_turnos(jardinero, 5).
 limite_turnos(chofer, 5).
 limite_turnos(yutuber, 4).
+limite_turnos(esclavo, 7).
 
 :- dynamic asignacion_turno/3.
 
