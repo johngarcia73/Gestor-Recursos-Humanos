@@ -19,39 +19,19 @@ prolog.consult('usuario.pl')
 def limpiar_pantalla():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-# def menu_principal():
-#     limpiar_pantalla()
-#     print('--- Sistema de Gestión de Recursos Humanos ---')
-#     print('1. Gestionar empleados')
-#     print('2. Gestionar cargos')
-#     print('3. Gestionar tareas')
-#     print('4. Gestionar turnos')
-#     print('5. Gestionar puntuaciones')
-#     print('0. Salir')
-#     opcion = input('Seleccione una opción: ')
-#     ejecutar_opcion_principal(opcion)
-
-
 def menu_principal():
-    ventana = tk.Tk()
-    ventana.title('Sistema de Gestión de Recursos Humanos')
+    limpiar_pantalla()
+    print('--- Sistema de Gestión de Recursos Humanos ---')
+    print('1. Gestionar empleados')
+    print('2. Gestionar cargos')
+    print('3. Gestionar tareas')
+    print('4. Gestionar turnos')
+    print('5. Gestionar puntuaciones')
+    print('0. Salir')
+    opcion = input('Seleccione una opción: ')
+    ejecutar_opcion_principal(opcion)
 
-    tk.Label(ventana, text='--- Sistema de Gestión de Recursos Humanos ---').pack(pady=10)
 
-    opciones = [
-        ('Gestionar empleados', menu_empleados),
-        ('Gestionar cargos', menu_cargos),
-        ('Gestionar tareas', menu_tareas),
-        ('Gestionar turnos', menu_turnos),
-        ('Gestionar puntuaciones', menu_puntuaciones),
-        ('Salir', ventana.destroy)
-    ]
-
-    for texto, comando in opciones:
-        boton = tk.Button(ventana, text=texto, width=30, command=comando)
-        boton.pack(pady=5)
-
-    ventana.mainloop()
 
 
 def ejecutar_opcion_principal(opcion):
@@ -93,15 +73,15 @@ def mostrar_cargos():
         print(f"Cargo: {result['NombreCargo']}")
     print('--- Fin de la lista de cargos ---')
 
-# def menu_empleados():
-#     limpiar_pantalla()
-#     print('--- Gestionar Empleados ---')
-#     print('1. Agregar empleado')
-#     print('2. Borrar empleado')
-#     print('3. Consultar empleado')
-#     print('0. Volver al menú principal')
-#     opcion = input('Seleccione una opción: ')
-#     ejecutar_opcion_empleados(opcion)
+def menu_empleados():
+    limpiar_pantalla()
+    print('--- Gestionar Empleados ---')
+    print('1. Agregar empleado')
+    print('2. Borrar empleado')
+    print('3. Consultar empleado')
+    print('0. Volver al menú principal')
+    opcion = input('Seleccione una opción: ')
+    ejecutar_opcion_empleados(opcion)
     
 
 
