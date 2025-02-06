@@ -272,17 +272,15 @@ def iniciar_aplicacion():
                 messagebox.showwarning('Advertencia', 'Por favor, ingrese el nombre del cargo.')
                 return
             try:
-                empleado_query = list(prolog.query(f"cargo('{nombre}')"))
-                if empleado_query:
-                    info = empleado_query[0]
-                    mensaje = f"ID: {info['ID']}\nNombre: {nombre}"
-                    # Si tienes más información, agrégala aquí
-                    messagebox.showinfo('Información del Empleado', mensaje)
+                cargo_query = list(prolog.query(f"cargo('{nombre}')"))
+                if cargo_query:
+                    for result in prolog.query(f"consultar_cargo_por_nombre('{nombre}')"):
+                        messagebox.showinfo('Información del Cargo', result)
                 else:
-                    messagebox.showerror('Error', f"Empleado {nombre} no encontrado.")
+                    messagebox.showerror('Error', f"Cargo {nombre} no encontrado.")
             except Exception as e:
                 messagebox.showerror('Error', f"Ocurrió un error: {e}")
-            menu_empleados()
+            menu_cargos()
 
         tk.Button(contenedor_principal, text='Consultar', command=ejecutar_consultar).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver', command=menu_empleados).pack(pady=5)
@@ -313,8 +311,8 @@ def iniciar_aplicacion():
                 messagebox.showerror('Error', f"Cargo {cargo} o Empleado {empleado} no encontrado.")
             else:    
                 try:
-                    for result in prolog.query(f"asignar_cargo_a_empleado('{empleado}', '{cargo}')"):
-                        print(result)
+                    for result in prolog.query(f"asignar_cargo_a_empleado({empleado}, {cargo})"):
+                        messagebox.showinfo('Resultado', result) 
                 except Exception as e:
                     messagebox.showerror('Error', f"Ocurrió un error: {e}")
             

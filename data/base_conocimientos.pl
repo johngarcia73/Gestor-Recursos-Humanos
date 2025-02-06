@@ -4,7 +4,7 @@ empleado(3, 'Pedro Lopez').
 empleado(4, 'Ana Martinez').
 empleado(8, 'Arnaldo Rodriguez').
 empleado(11, victorini).
-empleado(13, joridama).
+empleado(15, 'paco pepe').
 
 :- dynamic cargo/1.
 
@@ -128,10 +128,14 @@ registro_accion('Borrar', 'Cargo', chofer, '2025-02-05 19:42:11').
 registro_accion('Borrar', 'Cargo', ingeniero, '2025-02-05 20:00:41').
 registro_accion('Borrar', 'Empleado', pepe, '2025-02-05 20:02:32').
 registro_accion('Borrar', 'Empleado', 'Jose Agustin', '2025-02-05 20:02:43').
+registro_accion('Agregar', 'Empleado', 15, '2025-02-06 00:12:23').
+registro_accion('Borrar', 'Empleado', joridama, '2025-02-06 00:13:04').
+registro_accion('Agregar', 'Cargo', yutuber, '2025-02-06 00:13:46').
+registro_accion('Borrar', 'Cargo', yutuber, '2025-02-06 00:14:06').
 
 :- dynamic id_contador/1.
 
-id_contador(14).
+id_contador(15).
 
 :- dynamic id_contador_turno/1.
 
@@ -153,6 +157,7 @@ limite_turnos(portero, 5).
 limite_turnos(profe, 4).
 limite_turnos(jardinero, 5).
 limite_turnos(chofer, 5).
+limite_turnos(yutuber, 4).
 
 :- dynamic asignacion_turno/3.
 
