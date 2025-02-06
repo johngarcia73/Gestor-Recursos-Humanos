@@ -5,12 +5,15 @@ empleado(4, 'Ana Martinez').
 empleado(8, 'Arnaldo Rodriguez').
 empleado(11, victorini).
 empleado(15, 'paco pepe').
+empleado(16, natsu).
+empleado(17, ddd).
+empleado(18, julito).
+empleado(19, pablo).
 
 :- dynamic cargo/1.
 
 cargo(disenador).
 cargo(programador).
-cargo(portero).
 cargo(jardinero).
 cargo(profe).
 cargo(esclavo).
@@ -18,8 +21,8 @@ cargo(esclavo).
 :- dynamic cargo_empleado/2.
 
 cargo_empleado(3, programador).
-cargo_empleado(8, portero).
 cargo_empleado(15, esclavo).
+cargo_empleado(19, esclavo).
 
 :- dynamic tarea/2.
 
@@ -29,6 +32,9 @@ cargo_empleado(15, esclavo).
 tarea('reparar el baño', 4, 8).
 tarea(chambear, 3, 3).
 tarea(relajarse, 11, 5).
+tarea(' lavar la ropa', 19, '32').
+tarea(comer, 19, '234').
+tarea(cocinar, 4, '45').
 
 :- dynamic evaluacion/4.
 
@@ -141,14 +147,27 @@ registro_accion('Consultar', 'Cargo', programador, '2025-02-06 01:10:13').
 registro_accion('Agregar', 'Cargo', esclavo, '2025-02-06 01:11:35').
 registro_accion('Agregar', 'CargoEmpleado', esclavo, '2025-02-06 01:18:44').
 registro_accion('Agregar', 'Tarea', relajarse, '2025-02-06 01:23:29').
+registro_accion('Agregar', 'Empleado', 16, '2025-02-06 03:46:54').
+registro_accion('Agregar', 'Empleado', 17, '2025-02-06 03:47:29').
+registro_accion('Agregar', 'Empleado', 18, '2025-02-06 03:51:48').
+registro_accion('Agregar', 'Empleado', 19, '2025-02-06 03:52:44').
+registro_accion('Agregar', 'Empleado', 20, '2025-02-06 03:54:43').
+registro_accion('Agregar', 'Empleado', 21, '2025-02-06 04:06:44').
+registro_accion('Borrar', 'Empleado', goku, '2025-02-06 04:08:54').
+registro_accion('Borrar', 'Empleado', otro, '2025-02-06 04:09:19').
+registro_accion('Borrar', 'Cargo', portero, '2025-02-06 04:26:45').
+registro_accion('Agregar', 'CargoEmpleado', esclavo, '2025-02-06 04:39:09').
+registro_accion('Agregar', 'Tarea', ' lavar la ropa', '2025-02-06 04:46:07').
+registro_accion('Agregar', 'Tarea', comer, '2025-02-06 04:53:46').
+registro_accion('Agregar', 'Tarea', cocinar, '2025-02-06 05:19:38').
 
 :- dynamic id_contador/1.
 
-id_contador(15).
+id_contador(21).
 
 :- dynamic id_contador_turno/1.
 
-id_contador_turno(12).
+id_contador_turno(13).
 
 :- dynamic turno/5.
 
@@ -156,6 +175,7 @@ turno(6, 9, 17, programador, 3).
 turno(1, 9, 17, ingeniero, 2).
 turno(9, 3, 11, ingeniero, 1).
 turno(12, 10, 22, ingeniero, 2).
+turno(13, 7, 15, programador, 3).
 
 :- dynamic limite_turnos/2.
 

@@ -35,6 +35,7 @@ def iniciar_aplicacion():
         tk.Button(contenedor_principal, text='Gestionar empleados', width=30, command=menu_empleados).pack(pady=10)
         tk.Button(contenedor_principal, text='Gestionar cargos', width=30, command=menu_cargos).pack(pady=10)
         tk.Button(contenedor_principal, text='Gestionar tareas', width=30, command=menu_tareas).pack(pady=10)
+        tk.Button(contenedor_principal, text='Gestionar turnos', width=30, command=menu_turnos).pack(pady=10)
         # Añade más botones para otras opciones si es necesario
         tk.Button(contenedor_principal, text='Salir', width=30, command=ventana.quit).pack(pady=10)
 
@@ -65,7 +66,7 @@ def iniciar_aplicacion():
         tk.Button(contenedor_principal, text='Consultar cargo', width=30, command=consultar_cargo).pack(pady=10)
         tk.Button(contenedor_principal, text='Asignar cargo a empleado', width=30, command=asignar_cargo_empleado).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver al menú principal', width=30, command=menu_principal).pack(pady=20)
-        tk.Button(contenedor_principal, text='Volver al menú principal', width=30, command=menu_principal).pack(pady=20)
+        
         
         
     def menu_tareas():
@@ -73,13 +74,30 @@ def iniciar_aplicacion():
         for widget in contenedor_principal.winfo_children():
             widget.destroy()
 
-        tk.Label(contenedor_principal, text='--- Gestionar Cargos ---', font=('Helvetica', 16)).pack(pady=20)
+        tk.Label(contenedor_principal, text='--- Gestionar Tareas ---', font=('Helvetica', 16)).pack(pady=20)
 
         # Añade botones y funcionalidad según tus necesidades
         tk.Button(contenedor_principal, text='Agregar tarea a empleado', width=30, command=agregar_tarea_empleado).pack(pady=10)
         tk.Button(contenedor_principal, text='Borrar tarea de empleado', width=30, command=borrar_tarea_empleado).pack(pady=10)
         tk.Button(contenedor_principal, text='Completar tarea de empleado', width=30, command=completar_tarea_empleado).pack(pady=10)
         tk.Button(contenedor_principal, text='Obtener tareas de empleado', width=30, command=obtener_tarea_empleado).pack(pady=10)
+        tk.Button(contenedor_principal, text='Volver al menú principal', width=30, command=menu_principal).pack(pady=20)
+
+
+
+    def menu_turnos():
+        # Similar a menu_empleados(), implementa la lógica para gestionar cargos
+        for widget in contenedor_principal.winfo_children():
+            widget.destroy()
+
+        tk.Label(contenedor_principal, text='--- Gestionar Turnos ---', font=('Helvetica', 16)).pack(pady=20)
+
+        # Añade botones y funcionalidad según tus necesidades
+        tk.Button(contenedor_principal, text='Agregar turno', width=30, command=agregar_turno).pack(pady=10)
+        tk.Button(contenedor_principal, text='Mostrar turnos', width=30, command=listar_todos_los_turnos).pack(pady=10)
+        tk.Button(contenedor_principal, text='Borrar turno', width=30, command=borrar_turno).pack(pady=10)
+        tk.Button(contenedor_principal, text='Consultar turnos por cargo', width=30, command=completar_tarea_empleado).pack(pady=10)
+        tk.Button(contenedor_principal, text='Planificar automáticamente turnos para una fecha', width=30, command=obtener_tarea_empleado).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver al menú principal', width=30, command=menu_principal).pack(pady=20)
 
 
@@ -101,15 +119,23 @@ def iniciar_aplicacion():
                 messagebox.showwarning('Advertencia', 'Por favor, complete todos los campos.')
                 return
             try:
-                for result in prolog.query(f"agregar_empleado_por_nombre('{nombre}')"):
-                    messagebox.showinfo('Resultado', result)
+                consulta=f"agregar_empleado_por_nombre('{nombre}',Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Empleado {nombre} agregado exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
+                else:
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
             except Exception as e:
                 messagebox.showerror('Error', f"Ocurrió un error: {e}")
             menu_empleados()
 
         tk.Button(contenedor_principal, text='Agregar', command=ejecutar_agregar).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver', command=menu_empleados).pack(pady=5)
-
+        
     def borrar_empleado():
         for widget in contenedor_principal.winfo_children():
             widget.destroy()
@@ -126,12 +152,16 @@ def iniciar_aplicacion():
                 messagebox.showwarning('Advertencia', 'Por favor, ingrese el nombre del empleado.')
                 return
             try:
-                empleado_query = list(prolog.query(f"empleado(ID, '{nombre}')"))
-                if empleado_query:
-                    for result in prolog.query(f"borrar_empleado_por_nombre('{nombre}')"):
-                        messagebox.showinfo('Resultado', f"Empleado {nombre} borrado exitosamente.")
+                consulta=f"borrar_empleado_por_nombre('{nombre}',Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Empleado {nombre} borrado exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
                 else:
-                    messagebox.showerror('Error', f"Empleado {nombre} no encontrado.")
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
             except Exception as e:
                 messagebox.showerror('Error', f"Ocurrió un error: {e}")
             menu_empleados()
@@ -159,7 +189,6 @@ def iniciar_aplicacion():
                 if empleado_query:
                     info = empleado_query[0]
                     mensaje = f"ID: {info['ID']}\nNombre: {nombre}"
-                    # Si tienes más información, agrégala aquí
                     messagebox.showinfo('Información del Empleado', mensaje)
                 else:
                     messagebox.showerror('Error', f"Empleado {nombre} no encontrado.")
@@ -260,12 +289,16 @@ def iniciar_aplicacion():
                 messagebox.showwarning('Advertencia', 'Por favor, ingrese el nombre del cargo.')
                 return
             try:
-                empleado_query = list(prolog.query(f"cargo('{nombre}')"))
-                if empleado_query:
-                    for result in prolog.query(f"borrar_cargo_por_nombre('{nombre}')"):
-                        messagebox.showinfo('Resultado', f"Cargo {nombre} borrado exitosamente.")
+                consulta=f"borrar_cargo_por_nombre('{nombre}',Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Cargo {nombre} borrado exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
                 else:
-                    messagebox.showerror('Error', f"Cargo {nombre} no encontrado.")
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
             except Exception as e:
                 messagebox.showerror('Error', f"Ocurrió un error: {e}")
             menu_cargos()
@@ -291,10 +324,8 @@ def iniciar_aplicacion():
             try:
                 cargo_query = list(prolog.query(f"cargo('{nombre}')"))
                 if cargo_query:
-                    for result in prolog.query(f"consultar_cargo_por_nombre('{nombre}')"):
-                        for widget in contenedor_principal.winfo_children():
-                            widget.destroy()
-                                            
+                    mensaje = f"Nombre: {nombre}"
+                    messagebox.showinfo('Cargo', mensaje)
                 else:
                     messagebox.showerror('Error', f"Cargo {nombre} no encontrado.")
             except Exception as e:
@@ -324,14 +355,18 @@ def iniciar_aplicacion():
             if not cargo or not empleado:
                 messagebox.showwarning('Advertencia', 'Por favor, rellene todos los campos.')
                 return
-            empleado_query = list(prolog.query(f"empleado(ID,'{empleado}')"))
-            cargo_query=list(prolog.query(f"cargo('{cargo}')"))
-            if  not empleado_query or not cargo_query:
-                messagebox.showerror('Error', f"Cargo {cargo} o Empleado {empleado} no encontrado.")
             else:    
                 try:
-                    for result in prolog.query(f"asignar_cargo_a_empleado('{empleado}', '{cargo}')"):
-                        messagebox.showinfo('Resultado', result) 
+                    consulta=f"asignar_cargo_a_empleado('{empleado}','{cargo}',Resultado)"
+                    resultado= list(prolog.query(consulta))
+                    if resultado:
+                        res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Asignado exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
+                    else:
+                        messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
                 except Exception as e:
                     messagebox.showerror('Error', f"Ocurrió un error: {e}")
             
@@ -339,9 +374,6 @@ def iniciar_aplicacion():
             
         tk.Button(contenedor_principal, text='Asignar', command=asignar).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver', command=menu_cargos).pack(pady=5)
-        
-        
-        
         
         
     # Funciones de gestion de tareas
@@ -371,8 +403,16 @@ def iniciar_aplicacion():
                 messagebox.showwarning('Advertencia', 'Por favor, complete todos los campos.')
                 return
             try:
-                for result in prolog.query(f"agregar_tarea_por_nombre('{empleado}', '{tarea}', {valor})"):
-                    messagebox.showinfo("Resultado",result)
+                consulta=f"agregar_tarea_a_empleado('{empleado}','{tarea}','{valor}',Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Tarea agregado a empleado {empleado}  exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
+                else:
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
             except Exception as e:
                 messagebox.showerror('Error', f"Ocurrió un error: {e}")
             menu_tareas()
@@ -390,18 +430,27 @@ def iniciar_aplicacion():
         entrada_nombre = tk.Entry(contenedor_principal)
         entrada_nombre.pack(pady=5)
         
+        tk.Label(contenedor_principal, text='Ingrese la tarea a borrar:').pack(pady=5)
+        entrada_tarea = tk.Entry(contenedor_principal)
+        entrada_tarea.pack(pady=5)
+        
         def ejecutar_borrar():
             nombre = entrada_nombre.get()
-            if not nombre:
-                messagebox.showwarning('Advertencia', 'Por favor, ingrese el nombre del empleado.')
+            tarea=entrada_tarea.get()
+            if not nombre or not tarea:
+                messagebox.showwarning('Advertencia', 'Por favor, rellene todos los campos.')
                 return
             try:
-                empleado_query = list(prolog.query(f"empleado(ID,'{nombre}')"))
-                if empleado_query:
-                    for result in prolog.query(f"borrar_tarea_por_nombre('{nombre}')"):
-                        messagebox.showinfo('Resultado', "Tarea borrada exitosamente.")
+                consulta=f"borrar_tarea_de_empleado('{nombre}','{tarea}',Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Tarea borrada exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
                 else:
-                    messagebox.showerror('Error', f"Empleado {nombre} no encontrado.")
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
             except Exception as e:
                 messagebox.showerror('Error', f"Ocurrió un error: {e}")
             menu_tareas()
@@ -409,6 +458,166 @@ def iniciar_aplicacion():
         tk.Button(contenedor_principal, text='Borrar', command=ejecutar_borrar).pack(pady=10)
         tk.Button(contenedor_principal, text='Volver', command=menu_tareas).pack(pady=5)
 
+    def completar_tarea_empleado():
+        for widget in contenedor_principal.winfo_children():
+            widget.destroy()
+
+        tk.Label(contenedor_principal, text='Agregar Empleado', font=('Helvetica', 16)).pack(pady=20)
+
+        tk.Label(contenedor_principal, text='Ingrese el nombre del empleado:').pack(pady=5)
+        entrada_nombre = tk.Entry(contenedor_principal)
+        entrada_nombre.pack(pady=5)
+        
+        tk.Label(contenedor_principal, text='Ingrese la tarea a completar:').pack(pady=5)
+        entrada_tarea = tk.Entry(contenedor_principal)
+        entrada_tarea.pack(pady=5)
+        
+        def completar():
+            nombre = entrada_nombre.get()
+            tarea=entrada_tarea.get()
+            if not nombre or not tarea:
+                messagebox.showwarning('Advertencia', 'Por favor, complete todos los campos.')
+                return
+            try:
+                consulta=f"completar_tarea_de_empleado('{nombre}','{tarea}',Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Tarea completada exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
+                else:
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
+            except Exception as e:
+                messagebox.showerror('Error', f"Ocurrió un error: {e}")
+            menu_tareas()
+
+        tk.Button(contenedor_principal, text='Agregar', command=completar).pack(pady=10)
+        tk.Button(contenedor_principal, text='Volver', command=menu_tareas).pack(pady=5)
+        
+    def obtener_tarea_empleado():
+        for widget in contenedor_principal.winfo_children():
+            widget.destroy()
+
+        tk.Label(contenedor_principal, text='Tareas', font=('Helvetica', 16)).pack(pady=20)
+
+        tk.Label(contenedor_principal, text='Ingrese el nombre del empleado:').pack(pady=5)
+        entrada_nombre = tk.Entry(contenedor_principal)
+        entrada_nombre.pack(pady=5)
+        
+        def ejecutar():
+            nombre = entrada_nombre.get()
+            if not nombre:
+                messagebox.showwarning('Advertencia', 'Por favor, ingrese el nombre del empleado.')
+                return
+            try:
+                consulta = f"obtener_tareas_de_empleado('{nombre}', Resultado)"
+                resultado = list(prolog.query(consulta))
+                if resultado:
+                    res = resultado[0]['Resultado']
+                    if res[0] == 'ok':
+                        tareas = res[2]
+                        mensaje = f"Tareas de {nombre}:\n" + "\n".join(tareas)
+                        messagebox.showinfo('Tareas', mensaje)
+                    elif res[0] == 'error':
+                        messagebox.showerror('Error', res[1])
+                else:
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
+            except Exception as e:
+                messagebox.showerror('Error', f"Ocurrió un error: {e}")
+            menu_tareas()
+
+        tk.Button(contenedor_principal, text='Mostrar', command=ejecutar).pack(pady=10)
+        tk.Button(contenedor_principal, text='Volver', command=menu_tareas).pack(pady=5)
+        
+        
+    # Funciones de gestion de turnos
+    def agregar_turno():
+        for widget in contenedor_principal.winfo_children():
+            widget.destroy()
+
+        tk.Label(contenedor_principal, text='Agregar Turno', font=('Helvetica', 16)).pack(pady=20)
+
+        tk.Label(contenedor_principal, text='Ingrese la hora de inicio del turno:').pack(pady=5)
+        entrada_inicio = tk.Entry(contenedor_principal)
+        entrada_inicio.pack(pady=5)
+        
+        tk.Label(contenedor_principal, text='Ingrese la hora de fin del turno:').pack(pady=5)
+        entrada_fin = tk.Entry(contenedor_principal)
+        entrada_fin.pack(pady=5)
+        
+        tk.Label(contenedor_principal, text='Ingrese el cargo del turno: ').pack(pady=5)
+        entrada_cargo = tk.Entry(contenedor_principal)
+        entrada_cargo.pack(pady=5)
+        
+        tk.Label(contenedor_principal, text='Ingrese el cooldown del turno: ').pack(pady=5)
+        entrada_cooldown = tk.Entry(contenedor_principal)
+        entrada_cooldown.pack(pady=5)
+        
+        
+        def ejecutar_agregar():
+            inicio = entrada_inicio.get()
+            fin= entrada_fin.get()
+            cargo = entrada_cargo.get()
+            cooldown = entrada_cooldown.get()
+            if not inicio or not fin or not cargo or not cooldown :
+                messagebox.showwarning('Advertencia', 'Por favor, complete todos los campos.')
+                return
+            try:
+                consulta=f"agregar_turno_por_detalles({inicio},{fin},{cargo},{cooldown},Resultado)"
+                resultado= list(prolog.query(consulta))
+                if resultado:
+                    res=resultado[0]['Resultado']
+                    if res[0]=='ok':
+                        messagebox.showinfo('Éxito', f"Turno agregado exitosamente.")
+                    elif res[0]=='error':
+                        messagebox.showerror('Error', res[1])
+                else:
+                    messagebox.showerror('Error', 'No se obtuvo respuesta de Prolog.')
+            except Exception as e:
+                messagebox.showerror('Error', f"Ocurrió un error: {e}")
+            menu_turnos()
+
+        tk.Button(contenedor_principal, text='Agregar', command=ejecutar_agregar).pack(pady=10)
+        tk.Button(contenedor_principal, text='Volver', command=menu_turnos).pack(pady=5)
+        
+    def listar_todos_los_turnos():
+        for widget in contenedor_principal.winfo_children():
+            widget.destroy()
+
+        canvas = tk.Canvas(contenedor_principal)
+        scrollbar = tk.Scrollbar(contenedor_principal, orient="vertical", command=canvas.yview)
+        scroll_frame = tk.Frame(canvas)
+
+        scroll_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=scroll_frame, anchor='nw')
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        tk.Label(scroll_frame, text="--- Turnos Disponibles ---", font=('Helvetica', 16)).pack(pady=20)
+
+        try:
+            turnos = list(prolog.query('listar_todos_los_turnos'))
+            if turnos:
+                for turno in turnos[0]['Turnos']:
+                    tk.Label(scroll_frame, text=f"ID: {turno[0]}, HoraInicio: {turno[1]}:00, HoraFin: {turno[2]}:00, Cargo: {turno[3]}, Cooldown: {turno[4]} días", font=('Helvetica', 12)).pack(anchor='w', pady=2)
+            else:
+                tk.Label(scroll_frame, text="No hay turnos disponibles.", font=('Helvetica', 12)).pack(anchor='w', pady=2)
+        except Exception as e:
+            messagebox.showerror('Error', f"Ocurrió un error: {e}")
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        tk.Button(contenedor_principal, text='Volver', command=menu_turnos).pack(pady=5)
+
+    
         
     # Inicializamos mostrando el menú principal
     menu_principal()
